@@ -1,5 +1,4 @@
 import pygame
-from sys import exit
 
 class Loading(object):
     def __init__(self):
