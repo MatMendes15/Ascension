@@ -34,6 +34,8 @@ class Jogador(pygame.sprite.Sprite):
 
     def entrada_jogador(self):
         teclas = pygame.key.get_pressed()
+        velocidade_acelerar = 3
+        velocidade_recuo = 2
         
         if teclas[pygame.K_UP] and self.rect.bottom >= self.altura_chao and not self.fazendo_rasteira:
             self.gravidade = -23
@@ -42,8 +44,13 @@ class Jogador(pygame.sprite.Sprite):
         if teclas[pygame.K_DOWN] and self.rect.bottom >= self.altura_chao and not self.fazendo_rasteira:
             self.fazendo_rasteira = True
             self.indice_rasteira = 0
-            self.altura_chao += 35  # Desce 5 pixels
+            self.altura_chao += 35
             self.rect.bottom = self.altura_chao
+
+        if teclas[pygame.K_RIGHT]:
+            self.rect.x += velocidade_acelerar
+        if teclas[pygame.K_LEFT]:
+            self.rect.x -= velocidade_recuo
 
     def aplicar_gravidade(self):
         self.gravidade += 1
