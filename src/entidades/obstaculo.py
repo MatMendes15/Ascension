@@ -8,7 +8,7 @@ class Obstaculo(pygame.sprite.Sprite):
             morcego_1 = pygame.image.load('assets/imagens/inimigo_voador/morcego_1.png').convert_alpha()
             morcego_2 = pygame.image.load('assets/imagens/inimigo_voador/morcego_2.png').convert_alpha()
             self.frames = [morcego_1, morcego_2]
-            pos_y = 300
+            pos_y = 270
         else:
             cogumelo_1 = pygame.image.load('assets/imagens/inimigo_terrestre/cogumelo_1.png').convert_alpha()
             cogumelo_2 = pygame.image.load('assets/imagens/inimigo_terrestre/cogumelo_2.png').convert_alpha()
