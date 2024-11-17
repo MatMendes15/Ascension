@@ -35,6 +35,10 @@ class Jogo:
         self.obstacle_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.obstacle_timer, 1500)
 
+        self.velocidade_obstaculos = 6
+        self.tempo_ultimo_incremento = pygame.time.get_ticks()
+        self.intervalo_incremento = 20000  # Dificuldade aumenta - 20 segundos
+
     def run(self):
         while True:
             self.events()
@@ -55,7 +59,9 @@ class Jogo:
                     if event.key == pygame.K_UP and self.jogador.sprite.rect.bottom >= 300:
                         self.jogador.sprite.gravidade = -20
                 if event.type == self.obstacle_timer:
-                    self.grupo_obstaculos.add(Obstaculo(choice(['morcego', 'cogumelo', 'cogumelo', 'cogumelo'])))
+                    tipo_obstaculo = choice(['morcego', 'cogumelo', 'cogumelo', 'cogumelo'])
+                    novo_obstaculo = Obstaculo(tipo_obstaculo, self.velocidade_obstaculos)
+                    self.grupo_obstaculos.add(novo_obstaculo)
             else:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                     self.start_game()
@@ -78,6 +84,8 @@ class Jogo:
         self.grupo_obstaculos.draw(self.tela)
         self.grupo_obstaculos.update()
 
+        self.verificar_incremento_dificuldade()
+
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
         if colisao:
             if self.jogador.sprite.pode_atacar:
@@ -89,6 +97,7 @@ class Jogo:
                     obstaculo.kill()
             else:
                 self.jogo_ativo = False
+                
     def update_menu(self):
         self.tela.fill((94, 129, 162))
         self.tela.blit(self.player_stand, self.player_stand_rect)
@@ -106,3 +115,9 @@ class Jogo:
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
         return current_time
+
+    def verificar_incremento_dificuldade(self):
+        tempo_atual = pygame.time.get_ticks()
+        if tempo_atual - self.tempo_ultimo_incremento >= self.intervalo_incremento:
+            self.velocidade_obstaculos += 1
+            self.tempo_ultimo_incremento = tempo_atual

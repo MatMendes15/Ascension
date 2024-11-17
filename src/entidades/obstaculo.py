@@ -2,7 +2,7 @@ import pygame
 from random import randint
 
 class Obstaculo(pygame.sprite.Sprite):
-    def __init__(self, tipo):
+    def __init__(self, tipo, velocidade):
         super().__init__()
         if tipo == 'morcego':
             morcego_1 = pygame.image.load('assets/imagens/inimigo_voador/morcego_1.png').convert_alpha()
@@ -18,6 +18,7 @@ class Obstaculo(pygame.sprite.Sprite):
         self.indice_animacao = 0
         self.image = self.frames[self.indice_animacao]
         self.rect = self.image.get_rect(midbottom=(randint(900, 1100), pos_y))
+        self.velocidade = velocidade
 
     def animation_state(self):
         self.indice_animacao += 0.1
@@ -27,7 +28,7 @@ class Obstaculo(pygame.sprite.Sprite):
 
     def update(self):
         self.animation_state()
-        self.rect.x -= 6
+        self.rect.x -= self.velocidade
         self.destroy()
 
     def destroy(self):
