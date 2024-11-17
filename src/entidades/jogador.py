@@ -15,7 +15,13 @@ class Jogador(pygame.sprite.Sprite):
             self.jogador_rasteira.append(frame)
             
         self.indice_jogador = 0
-        self.jogador_pulo = pygame.image.load('assets/imagens/Player/pulo.PNG').convert_alpha()
+
+        self.jogador_pulo = []
+        for i in range(1, 12):
+            frame = pygame.image.load(f'assets/imagens/Player/pulo/pulo_{i}.PNG').convert_alpha()
+            self.jogador_pulo.append(frame)
+        
+        self.indice_pulo = 0
 
         self.fazendo_rasteira = False
         self.indice_rasteira = 0
@@ -57,16 +63,21 @@ class Jogador(pygame.sprite.Sprite):
         self.rect.y += self.gravidade
         if self.rect.bottom >= self.altura_chao:
             self.rect.bottom = self.altura_chao
+            self.gravidade = 0
+            self.indice_pulo = 0
 
     def estado_animacao(self):
         if self.rect.bottom < self.altura_chao:
-            self.image = self.jogador_pulo
+            self.indice_pulo += 0.32
+            if self.indice_pulo >= len(self.jogador_pulo):
+                self.indice_pulo = len(self.jogador_pulo) - 1
+            self.image = self.jogador_pulo[int(self.indice_pulo)]
         elif self.fazendo_rasteira:
             self.indice_rasteira += 0.17
             if self.indice_rasteira >= len(self.jogador_rasteira):
                 self.fazendo_rasteira = False
                 self.indice_rasteira = 0
-                self.altura_chao = self.posicao_original_chao  # Retorna à posição original
+                self.altura_chao = self.posicao_original_chao
                 self.rect.bottom = self.altura_chao
                 self.image = self.jogador_andando[int(self.indice_jogador)]
             else:
