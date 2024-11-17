@@ -38,6 +38,17 @@ class Jogador(pygame.sprite.Sprite):
 
         self.offset_rasteira = 0
 
+        self.jogador_golpe = []
+        for i in range(1, 15):
+            frame = pygame.image.load(f'assets/imagens/Player/golpe/golpe_{i}.PNG').convert_alpha()
+            self.jogador_golpe.append(frame)
+        self.indice_golpe = 0.15
+
+        self.fazendo_ataque = False
+        self.pode_atacar = True
+        self.tempo_ultimo_ataque = 0
+        self.cooldown_ataque = 10000 # 10 segundos
+
     def entrada_jogador(self):
         teclas = pygame.key.get_pressed()
         velocidade_acelerar = 3
@@ -67,11 +78,19 @@ class Jogador(pygame.sprite.Sprite):
             self.indice_pulo = 0
 
     def estado_animacao(self):
-        if self.rect.bottom < self.altura_chao:
+        if self.fazendo_ataque:
+            self.indice_golpe += 0.3
+            if self.indice_golpe >= len(self.jogador_golpe):
+                self.indice_golpe = 0
+                self.fazendo_ataque = False
+            self.image = self.jogador_golpe[int(self.indice_golpe)]
+        
+        elif self.rect.bottom < self.altura_chao:
             self.indice_pulo += 0.32
             if self.indice_pulo >= len(self.jogador_pulo):
                 self.indice_pulo = len(self.jogador_pulo) - 1
             self.image = self.jogador_pulo[int(self.indice_pulo)]
+        
         elif self.fazendo_rasteira:
             self.indice_rasteira += 0.17
             if self.indice_rasteira >= len(self.jogador_rasteira):
@@ -79,9 +98,8 @@ class Jogador(pygame.sprite.Sprite):
                 self.indice_rasteira = 0
                 self.altura_chao = self.posicao_original_chao
                 self.rect.bottom = self.altura_chao
-                self.image = self.jogador_andando[int(self.indice_jogador)]
-            else:
-                self.image = self.jogador_rasteira[int(self.indice_rasteira)]
+            self.image = self.jogador_rasteira[int(self.indice_rasteira)]
+        
         else:
             self.indice_jogador += 0.2
             if self.indice_jogador >= len(self.jogador_andando):
@@ -91,4 +109,11 @@ class Jogador(pygame.sprite.Sprite):
     def update(self):
         self.entrada_jogador()
         self.aplicar_gravidade()
+        self.atualizar_ataque()
         self.estado_animacao()
+
+    def atualizar_ataque(self):
+        if not self.pode_atacar:
+            tempo_atual = pygame.time.get_ticks()
+            if tempo_atual - self.tempo_ultimo_ataque >= self.cooldown_ataque:
+                self.pode_atacar = True

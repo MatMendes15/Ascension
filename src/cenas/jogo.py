@@ -78,9 +78,17 @@ class Jogo:
         self.grupo_obstaculos.draw(self.tela)
         self.grupo_obstaculos.update()
 
-        if pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False):
-            self.jogo_ativo = False
+        colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
+        if colisao:
+            if self.jogador.sprite.pode_atacar:
+                self.jogador.sprite.fazendo_ataque = True
+                self.jogador.sprite.pode_atacar = False
+                self.jogador.sprite.tempo_ultimo_ataque = pygame.time.get_ticks()
 
+                for obstaculo in colisao:
+                    obstaculo.kill()
+            else:
+                self.jogo_ativo = False
     def update_menu(self):
         self.tela.fill((94, 129, 162))
         self.tela.blit(self.player_stand, self.player_stand_rect)
