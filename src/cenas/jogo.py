@@ -84,8 +84,17 @@ class Jogo:
         self.grupo_obstaculos.draw(self.tela)
         self.grupo_obstaculos.update()
 
-        self.verificar_incremento_dificuldade()
+        # Verifica colisão com o portal
+        if self.fundo.portal_active:
+            colisao_portal = pygame.sprite.spritecollide(self.jogador.sprite, self.fundo.portal_group, False)
+            if colisao_portal:
+                # Adicione efeito de transição se desejar
+                self.fundo.alternar_cenario()
+                self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
+                self.fundo.portal_group.empty()
+                self.fundo.portal_active = False
 
+        # Verifica colisão com obstáculos
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
         if colisao:
             if self.jogador.sprite.pode_atacar:
