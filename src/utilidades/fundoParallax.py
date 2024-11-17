@@ -82,10 +82,21 @@ class FundoParallax:
                 {'imagem': pygame.image.load('assets/imagens/fundo/ceu8/fundo_3.png').convert_alpha(), 'posicao': 0, 'velocidade': 3},
                 {'imagem': pygame.image.load('assets/imagens/fundo/ceu8/fundo_4.png').convert_alpha(), 'posicao': 0, 'velocidade': 4},
             ],
+            'espaco': [
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_8.png').convert_alpha(), 'posicao': 0, 'velocidade': 1},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_7.png').convert_alpha(), 'posicao': 0, 'velocidade': 2},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_6.png').convert_alpha(), 'posicao': 0, 'velocidade': 2},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_5.png').convert_alpha(), 'posicao': 0, 'velocidade': 2},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_4.png').convert_alpha(), 'posicao': 0, 'velocidade': 3},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_3.png').convert_alpha(), 'posicao': 0, 'velocidade': 3},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_2.png').convert_alpha(), 'posicao': 0, 'velocidade': 4},
+                {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_1.png').convert_alpha(), 'posicao': 0, 'velocidade': 2},
+
+            ]
         }
 
         # Ordem dos cenários
-        self.scenario_order = ['floresta', 'campo2', 'campo3', 'ceu', 'ceu2', 'ceu3', 'ceu4', 'ceu5', 'ceu6', 'ceu7', 'ceu8']
+        self.scenario_order = ['floresta', 'campo2', 'campo3', 'ceu', 'ceu2', 'ceu3', 'ceu4', 'ceu5', 'ceu6', 'ceu7', 'ceu8', 'espaco']
         self.current_scenario_index = 0
         self.current_scenario = self.scenario_order[self.current_scenario_index]
         self.camadas = self.scenarios[self.current_scenario]
