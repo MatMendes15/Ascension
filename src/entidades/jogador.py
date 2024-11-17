@@ -3,9 +3,12 @@ import pygame
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        jogador_andando_1 = pygame.image.load('assets/imagens/Player/jogador_correndo_1.PNG').convert_alpha()
-        jogador_andando_2 = pygame.image.load('assets/imagens/Player/jogador_correndo_2.PNG').convert_alpha()
-        self.jogador_andando = [jogador_andando_1, jogador_andando_2]
+        
+        self.jogador_andando = []
+        for i in range(1, 24):  # loop de 1 a 24 da personagem correndo
+            frame = pygame.image.load(f'assets/imagens/Player/corrida/corrida_{i}.PNG').convert_alpha()
+            self.jogador_andando.append(frame)
+            
         self.indice_jogador = 0
         self.jogador_pulo = pygame.image.load('assets/imagens/Player/pulo.PNG').convert_alpha()
 
@@ -34,7 +37,7 @@ class Jogador(pygame.sprite.Sprite):
         if self.rect.bottom < 300:
             self.image = self.jogador_pulo
         else:
-            self.indice_jogador += 0.1
+            self.indice_jogador += 0.2  # Quanto menor o valor, mais lenta a animação
             if self.indice_jogador >= len(self.jogador_andando):
                 self.indice_jogador = 0
             self.image = self.jogador_andando[int(self.indice_jogador)]
