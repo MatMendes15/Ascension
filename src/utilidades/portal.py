@@ -6,7 +6,7 @@ class Portal(pygame.sprite.Sprite):
         super().__init__()
         # Carrega os frames de animação do portal
         self.frames = []
-        for i in range(1, 8):  # Supondo que você tenha 4 frames de animação
+        for i in range(1, 8):
             frame = pygame.image.load(f'assets/imagens/objetos/portal_{i}.png').convert_alpha()
             self.frames.append(frame)
         self.animation_index = 0
@@ -15,7 +15,6 @@ class Portal(pygame.sprite.Sprite):
         self.animation_speed = 0.1
 
     def update(self):
-        # Atualiza a animação do portal
         self.animation_index += self.animation_speed
         if self.animation_index >= len(self.frames):
             self.animation_index = 0

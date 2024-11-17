@@ -84,6 +84,9 @@ class Jogo:
         self.grupo_obstaculos.draw(self.tela)
         self.grupo_obstaculos.update()
 
+        # Desenha a barra de carregamento
+        self.desenhar_barra_carregamento()
+
         # Verifica colisão com o portal
         if self.fundo.portal_active:
             colisao_portal = pygame.sprite.spritecollide(self.jogador.sprite, self.fundo.portal_group, False)
@@ -101,6 +104,8 @@ class Jogo:
                 self.jogador.sprite.fazendo_ataque = True
                 self.jogador.sprite.pode_atacar = False
                 self.jogador.sprite.tempo_ultimo_ataque = pygame.time.get_ticks()
+
+                self.jogador.sprite.indice_barra = 0
 
                 for obstaculo in colisao:
                     obstaculo.kill()
@@ -130,3 +135,8 @@ class Jogo:
         if tempo_atual - self.tempo_ultimo_incremento >= self.intervalo_incremento:
             self.velocidade_obstaculos += 1
             self.tempo_ultimo_incremento = tempo_atual
+
+    def desenhar_barra_carregamento(self):
+        barra_image = self.jogador.sprite.barra_carregamento_frames[self.jogador.sprite.indice_barra]
+        barra_rect = barra_image.get_rect(center=(170, 35))
+        self.tela.blit(barra_image, barra_rect)

@@ -146,7 +146,7 @@ class FundoParallax:
         if tempo_atual - self.tempo_portal_inicio >= self.tempo_portal_mostrar and self.portal_active:
             self.portal_group.empty()
             self.portal_active = False
-            # Caso queira forçar a troca de cenário mesmo sem interação:
+            # Troca de cenário mesmo sem interação:
             # self.alternar_cenario()
             # self.tempo_ultimo_cenario = tempo_atual
 
@@ -178,7 +178,6 @@ class FundoParallax:
         self.current_scenario_index = (self.current_scenario_index + 1) % len(self.scenario_order)
         self.current_scenario = self.scenario_order[self.current_scenario_index]
         self.camadas = self.scenarios[self.current_scenario]
-
         # Reseta as posições das camadas
         for camada in self.camadas:
             camada['posicao'] = 0

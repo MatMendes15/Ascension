@@ -47,7 +47,13 @@ class Jogador(pygame.sprite.Sprite):
         self.fazendo_ataque = False
         self.pode_atacar = True
         self.tempo_ultimo_ataque = 0
-        self.cooldown_ataque = 10000 # 10 segundos
+        self.cooldown_ataque = 20000 # 20 segundos
+
+        self.barra_carregamento_frames = []
+        for i in range(1, 151):  # De 1 a 151
+            frame = pygame.image.load(f'assets/imagens/barra_golpe/barra_golpe{i}.png').convert_alpha()
+            self.barra_carregamento_frames.append(frame)
+        self.indice_barra = 0
 
     def entrada_jogador(self):
         teclas = pygame.key.get_pressed()
@@ -111,9 +117,21 @@ class Jogador(pygame.sprite.Sprite):
         self.aplicar_gravidade()
         self.atualizar_ataque()
         self.estado_animacao()
+        self.atualizar_barra_carregamento()  # Atualiza a barra de carregamento
 
     def atualizar_ataque(self):
         if not self.pode_atacar:
             tempo_atual = pygame.time.get_ticks()
             if tempo_atual - self.tempo_ultimo_ataque >= self.cooldown_ataque:
                 self.pode_atacar = True
+        else:
+            self.indice_barra = len(self.barra_carregamento_frames) - 1  # Garante que a barra fique completa
+
+    def atualizar_barra_carregamento(self):
+        if not self.pode_atacar:
+            tempo_atual = pygame.time.get_ticks()
+            tempo_passado = tempo_atual - self.tempo_ultimo_ataque
+            progresso = tempo_passado / self.cooldown_ataque
+            self.indice_barra = int(progresso * (len(self.barra_carregamento_frames) - 1))
+        else:
+            self.indice_barra = len(self.barra_carregamento_frames) - 1
