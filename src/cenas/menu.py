@@ -49,9 +49,14 @@ class Menu:
             pygame.display.flip()
 
     def start(self, screen):
-        self.loading.load(screen)
-        game = Jogo()
-        game.run()
+        while True:
+            self.loading.load(screen)
+            game = Jogo()
+            game.run()
+            
+            if game.quit_game:
+                self.popUp(screen)
+                break
 
     def creditos(self, screen):
         pass
