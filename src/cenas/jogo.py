@@ -15,6 +15,7 @@ class Jogo:
         self.fonte_pixel = pygame.font.Font('assets/fontes/PressStart2PFont.ttf', 20)
         
         self.jogo_ativo = True
+        self.game_over = False
         self.tempo_inicio = 0
         self.pontuacao = 0
 
@@ -40,20 +41,7 @@ class Jogo:
         self.paused = False
         self.pause_menu = PauseMenu(self.tela)
         self.game_over_menu = GameOverMenu(self.tela)
-        self.quit_game = False  # Novo atributo
-
-    def run(self):
-        while not self.quit_game:
-            self.events()
-            if self.jogo_ativo:
-                if self.paused:
-                    self.update_pause_menu()
-                else:
-                    self.update_game()
-            else:
-                self.update_menu()
-            pygame.display.update()
-            self.relogio.tick(60)
+        self.quit_game = False
 
     def events(self):
         for event in pygame.event.get():
@@ -94,31 +82,33 @@ class Jogo:
                                 self.start_game()
                                 self.paused = False
                             elif selection == 'Menu Principal':
-                                self.jogo_ativo = False
-                                self.paused = False
-            else:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.game_over_menu.navigate(-1)
-                    elif event.key == pygame.K_DOWN:
-                        self.game_over_menu.navigate(1)
-                    elif event.key == pygame.K_RETURN:
-                        selection = self.game_over_menu.select()
-                        if selection == 'Reiniciar':
-                            self.start_game()
-                        elif selection == 'Menu Principal':
-                            self.quit_game = True  # Sinaliza para sair do loop
+                                self.quit_game = True
+                else:
+                    if self.game_over:
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_UP:
+                                self.game_over_menu.navigate(-1)
+                            elif event.key == pygame.K_DOWN:
+                                self.game_over_menu.navigate(1)
+                            elif event.key == pygame.K_RETURN:
+                                selection = self.game_over_menu.select()
+                                if selection == 'Reiniciar':
+                                    self.start_game()
+                                elif selection == 'Menu Principal':
+                                    self.quit_game = True
 
-    def start_game(self):
-        self.jogo_ativo = True
-        self.paused = False  # Certifique-se de que o jogo não está pausado
-        self.tempo_inicio = int(pygame.time.get_ticks() / 1000)
-        self.pontuacao = 0
-        self.grupo_obstaculos.empty()
-        self.jogador.sprite.rect.midbottom = (80, self.jogador.sprite.altura_chao)
-        self.jogador.sprite.gravidade = 0
-        self.velocidade_obstaculos = 6
-        self.tempo_ultimo_incremento = pygame.time.get_ticks()
+    def run(self):
+        while not self.quit_game:
+            self.events()
+            if self.jogo_ativo:
+                if self.paused:
+                    self.update_pause_menu()
+                else:
+                    self.update_game()
+            else:
+                self.update_menu()
+            pygame.display.update()
+            self.relogio.tick(60)
 
     def update_game(self):
         self.fundo.update()
@@ -130,7 +120,7 @@ class Jogo:
         self.grupo_obstaculos.draw(self.tela)
         self.grupo_obstaculos.update()
 
-        # Desenha a barra de carregamento
+        # Mostra a barra de carregamento do golpe
         self.desenhar_barra_carregamento()
 
         # Verifica colisão com o portal
@@ -158,7 +148,7 @@ class Jogo:
             else:
                 self.jogo_ativo = False
                 self.game_over = True
-                
+
     def update_menu(self):
         if self.game_over:
             # Mostra estado atual do jogo congelado
@@ -173,7 +163,7 @@ class Jogo:
 
     def display_score(self):
         current_time = int(pygame.time.get_ticks() / 1000) - self.tempo_inicio
-        score_surf = self.fonte_pixel.render(f'Pontuação:{current_time}', False, (64, 64, 64))
+        score_surf = self.fonte_pixel.render(f'Pontuação: {current_time}', False, (64, 64, 64))
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
         return current_time
@@ -198,3 +188,14 @@ class Jogo:
         self.desenhar_barra_carregamento()
         # Exibe o menu de pausa
         self.pause_menu.display_menu()
+
+    def start_game(self):
+        self.jogo_ativo = True
+        self.paused = False  # Certifique-se de que o jogo não está pausado
+        self.tempo_inicio = int(pygame.time.get_ticks() / 1000)
+        self.pontuacao = 0
+        self.grupo_obstaculos.empty()
+        self.jogador.sprite.rect.midbottom = (80, self.jogador.sprite.altura_chao)
+        self.jogador.sprite.gravidade = 0
+        self.velocidade_obstaculos = 6
+        self.tempo_ultimo_incremento = pygame.time.get_ticks()

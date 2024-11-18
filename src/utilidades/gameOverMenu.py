@@ -31,6 +31,9 @@ class GameOverMenu:
 
     def navigate(self, direction):
         self.selected_option = (self.selected_option + direction) % len(self.options)
+        print(f"Navegar para: {self.options[self.selected_option]}")  # Debug
 
     def select(self):
-        return self.options[self.selected_option]
+        selection = self.options[self.selected_option]
+        print(f"Selecionado: {selection}")  # Debug
+        return selection
