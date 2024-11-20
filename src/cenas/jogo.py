@@ -86,6 +86,7 @@ class Jogo:
                             elif selection == 'Reiniciar':
                                 self.start_game()
                                 self.paused = False
+                                self.fundo.despausar()
                             elif selection == 'Menu Principal':
                                 self.quit_game = True  # Sinaliza para sair do loop
                                 self.paused = False
@@ -196,12 +197,25 @@ class Jogo:
 
     def start_game(self):
         self.jogo_ativo = True
-        self.paused = False  # Certifique-se de que o jogo não está pausado
-        self.game_over = False  # Redefine o estado de game over
+        self.paused = False
+        self.game_over = False
         self.tempo_inicio = int(pygame.time.get_ticks() / 1000)
-        self.pontuacao = 0  # Redefine a pontuação
+        self.pontuacao = 0
         self.grupo_obstaculos.empty()
         self.jogador.sprite.rect.midbottom = (80, self.jogador.sprite.altura_chao)
         self.jogador.sprite.gravidade = 0
         self.velocidade_obstaculos = 6
         self.tempo_ultimo_incremento = pygame.time.get_ticks()
+        
+        # Reset cenário para o inicial
+        self.fundo.current_scenario_index = 0
+        self.fundo.current_scenario = self.fundo.scenario_order[0]
+        self.fundo.camadas = self.fundo.scenarios[self.fundo.current_scenario]
+        self.fundo.portal_active = False
+        self.fundo.portal_group.empty()
+        self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
+        self.fundo.tempo_pausa_total = 0
+        # Reset posições das camadas
+        for camada in self.fundo.camadas:
+            camada['posicao'] = 0
+        self.fundo.posicao_chao = 0
