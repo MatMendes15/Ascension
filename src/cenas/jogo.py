@@ -20,7 +20,7 @@ class Jogo:
         self.tempo_inicio = 0
         self.pontuacao = 0
 
-        self.musica_fundo = pygame.mixer.Sound('assets/audio/Running From My Shadow.mp3')
+        self.musica_fundo = pygame.mixer.Sound('assets/audio/Lost Highway.mp3')
         self.musica_fundo.play(loops=-1)
 
         self.jogador = pygame.sprite.GroupSingle()
