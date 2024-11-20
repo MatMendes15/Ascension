@@ -55,8 +55,10 @@ class Jogo:
                     if event.key == pygame.K_ESCAPE:
                         self.paused = not self.paused  # Alterna o estado de pausa
                         if self.paused:
+                            self.fundo.pausar()  # Pause background
                             pygame.mixer.music.pause()
                         else:
+                            self.fundo.despausar()  # Unpause background
                             pygame.mixer.music.unpause()
                     elif not self.paused:
                         # Controles do jogo quando não está pausado
@@ -79,6 +81,7 @@ class Jogo:
                             selection = self.pause_menu.select()
                             if selection == 'Continuar':
                                 self.paused = False
+                                self.fundo.despausar()  # Adicionar esta linha
                                 pygame.mixer.music.unpause()
                             elif selection == 'Reiniciar':
                                 self.start_game()
@@ -132,11 +135,11 @@ class Jogo:
         if self.fundo.portal_active:
             colisao_portal = pygame.sprite.spritecollide(self.jogador.sprite, self.fundo.portal_group, False)
             if colisao_portal:
-                self.pontuacao += 1  # Incrementa a pontuação
+                self.pontuacao += 1
                 self.fundo.alternar_cenario()
-                self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
+                # Removida a atribuição do tempo_ultimo_cenario aqui
                 self.fundo.portal_group.empty()
-                self.fundo.portal_active = False
+                self.portal_active = False
 
         # Verifica colisão com obstáculos
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)

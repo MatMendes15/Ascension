@@ -91,7 +91,6 @@ class FundoParallax:
                 {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_3.png').convert_alpha(), 'posicao': 0, 'velocidade': 3},
                 {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_2.png').convert_alpha(), 'posicao': 0, 'velocidade': 4},
                 {'imagem': pygame.image.load('assets/imagens/fundo/espaco/fundo_1.png').convert_alpha(), 'posicao': 0, 'velocidade': 2},
-
             ]
         }
 
@@ -115,7 +114,7 @@ class FundoParallax:
 
         # Controle de tempo para trocar o cenário
         self.tempo_ultimo_cenario = pygame.time.get_ticks()
-        self.intervalo_cenario = 30000  # 30 segundos em milissegundos
+        self.intervalo_cenario = 8000  # 8 segundos em milissegundos
 
         # Gerenciamento do portal
         self.portal_group = pygame.sprite.Group()
@@ -123,35 +122,58 @@ class FundoParallax:
         self.tempo_portal_mostrar = 5000  # Portal aparece 5 segundos antes
         self.tempo_portal_inicio = 0
 
+        self.tempo_pausa_inicio = 0
+        self.tempo_pausa_total = 0
+        self.pausado = False
+
+    def pausar(self):
+        if not self.pausado:
+            self.pausado = True
+            self.tempo_pausa_inicio = pygame.time.get_ticks()
+
+    def despausar(self):
+        if self.pausado:
+            self.pausado = False
+            tempo_atual = pygame.time.get_ticks()
+            tempo_pausado = tempo_atual - self.tempo_pausa_inicio
+            self.tempo_pausa_total += tempo_pausado
+            
+            # Define o tempo do último cenário para o tempo atual menos o tempo total de pausa
+            self.tempo_ultimo_cenario = tempo_atual - self.tempo_pausa_total
+            
+            # Se o portal estiver ativo, ajusta seu tempo também
+            if self.portal_active:
+                self.tempo_portal_inicio += tempo_pausado
+
     def update(self):
-        # Atualiza as posições das camadas
-        for camada in self.camadas:
-            camada['posicao'] -= camada['velocidade']
-            if camada['posicao'] <= -self.largura_tela:
-                camada['posicao'] = 0
+        if not self.pausado:
+            tempo_atual = pygame.time.get_ticks()
+            tempo_ajustado = tempo_atual - self.tempo_pausa_total
+            tempo_desde_ultimo_cenario = tempo_ajustado - self.tempo_ultimo_cenario
 
-        self.posicao_chao -= 5
-        if self.posicao_chao <= -self.largura_tela:
-            self.posicao_chao = 0
+            # Reduzir os prints de debug
+            print(f"DEBUG: tempo_desde_ultimo={tempo_desde_ultimo_cenario}, intervalo={self.intervalo_cenario}")
+            
+            # Verifica se é hora de mostrar o portal (3 segundos antes do fim do intervalo)
+            if (not self.portal_active and 
+                tempo_desde_ultimo_cenario >= self.intervalo_cenario - self.tempo_portal_mostrar):
+                print("DEBUG: Spawning portal!")
+                self.spawn_portal()
+                self.portal_active = True
+                self.tempo_portal_inicio = tempo_ajustado
 
-        tempo_atual = pygame.time.get_ticks()
+            # Atualiza as posições das camadas
+            for camada in self.camadas:
+                camada['posicao'] -= camada['velocidade']
+                if camada['posicao'] <= -self.largura_tela:
+                    camada['posicao'] = 0
 
-        # Verifica se é hora de mostrar o portal
-        if (tempo_atual - self.tempo_ultimo_cenario >= self.intervalo_cenario - self.tempo_portal_mostrar) and not self.portal_active:
-            self.spawn_portal()
-            self.portal_active = True
-            self.tempo_portal_inicio = tempo_atual
+            self.posicao_chao -= 5
+            if self.posicao_chao <= -self.largura_tela:
+                self.posicao_chao = 0
 
-        # Remove o portal após a troca de cenário
-        if tempo_atual - self.tempo_portal_inicio >= self.tempo_portal_mostrar and self.portal_active:
-            self.portal_group.empty()
-            self.portal_active = False
-            # Troca de cenário mesmo sem interação:
-            # self.alternar_cenario()
-            # self.tempo_ultimo_cenario = tempo_atual
-
-        # Atualiza o portal
-        self.portal_group.update()
+            # Update portal animation
+            self.portal_group.update()
 
     def draw(self, tela):
         # Desenha as camadas do cenário atual
@@ -174,11 +196,20 @@ class FundoParallax:
         self.portal_group.add(portal)
 
     def alternar_cenario(self):
-        # Avança para o próximo cenário na lista
+        # Avança para o próximo cenário
         self.current_scenario_index = (self.current_scenario_index + 1) % len(self.scenario_order)
         self.current_scenario = self.scenario_order[self.current_scenario_index]
         self.camadas = self.scenarios[self.current_scenario]
-        # Reseta as posições das camadas
+        
+        # Reset posições
         for camada in self.camadas:
             camada['posicao'] = 0
         self.posicao_chao = 0
+        
+        # Atualiza tempo do último cenário com tempo ajustado
+        tempo_atual = pygame.time.get_ticks()
+        self.tempo_ultimo_cenario = tempo_atual - self.tempo_pausa_total
+        
+        # Reset estado do portal
+        self.portal_active = False
+        self.portal_group.empty()
