@@ -60,8 +60,6 @@ class Menu:
     def start_game(self):
         # Exibe a tela de carregamento
         self.loading.load(self.screen)
-        
-        # instância do jogo
         game = Jogo()
         # Inicia o loop principal do jogo
         game.run()

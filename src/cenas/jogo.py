@@ -84,7 +84,7 @@ class Jogo:
                                 self.start_game()
                                 self.paused = False
                             elif selection == 'Menu Principal':
-                                self.jogo_ativo = False
+                                self.quit_game = True  # Sinaliza para sair do loop
                                 self.paused = False
             else:
                 if self.game_over:
@@ -119,7 +119,7 @@ class Jogo:
         self.fundo.update()
         self.fundo.draw(self.tela)
         
-        self.pontuacao = self.display_score()
+        self.display_score()
         self.jogador.draw(self.tela)
         self.jogador.update()
         self.grupo_obstaculos.draw(self.tela)
@@ -132,7 +132,7 @@ class Jogo:
         if self.fundo.portal_active:
             colisao_portal = pygame.sprite.spritecollide(self.jogador.sprite, self.fundo.portal_group, False)
             if colisao_portal:
-                # Adicione efeito de transição se desejar
+                self.pontuacao += 1  # Incrementa a pontuação
                 self.fundo.alternar_cenario()
                 self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
                 self.fundo.portal_group.empty()
@@ -166,11 +166,9 @@ class Jogo:
             self.game_over_menu.display_menu()
 
     def display_score(self):
-        current_time = int(pygame.time.get_ticks() / 1000) - self.tempo_inicio
-        score_surf = self.fonte_pixel.render(f'Pontuação: {current_time}', False, (64, 64, 64))
+        score_surf = self.fonte_pixel.render(f'Pontuação: {self.pontuacao}', False, (64, 64, 64))
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
-        return current_time
 
     def verificar_incremento_dificuldade(self):
         tempo_atual = pygame.time.get_ticks()
@@ -195,10 +193,10 @@ class Jogo:
 
     def start_game(self):
         self.jogo_ativo = True
-        self.paused = False
-        self.game_over = False 
+        self.paused = False  # Certifique-se de que o jogo não está pausado
+        self.game_over = False  # Redefine o estado de game over
         self.tempo_inicio = int(pygame.time.get_ticks() / 1000)
-        self.pontuacao = 0
+        self.pontuacao = 0  # Redefine a pontuação
         self.grupo_obstaculos.empty()
         self.jogador.sprite.rect.midbottom = (80, self.jogador.sprite.altura_chao)
         self.jogador.sprite.gravidade = 0

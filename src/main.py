@@ -11,4 +11,5 @@ if __name__ == '__main__':
 
     loading = Loading()
     menu = Menu(screen, loading)
-    menu.show()
+    while True:
+        menu.show()
