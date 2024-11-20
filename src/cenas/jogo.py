@@ -16,6 +16,7 @@ class Jogo:
         
         self.jogo_ativo = True
         self.game_over = False
+        self.paused = False
         self.tempo_inicio = 0
         self.pontuacao = 0
 
@@ -62,6 +63,7 @@ class Jogo:
                         if event.key == pygame.K_UP and self.jogador.sprite.rect.bottom >= self.jogador.sprite.altura_chao:
                             self.jogador.sprite.gravidade = -23
                             self.jogador.sprite.som_pulo.play()
+
                 if event.type == self.obstacle_timer and not self.paused:
                     tipo_obstaculo = choice(['morcego', 'cogumelo', 'cogumelo', 'cogumelo'])
                     novo_obstaculo = Obstaculo(tipo_obstaculo, self.velocidade_obstaculos)
@@ -82,20 +84,23 @@ class Jogo:
                                 self.start_game()
                                 self.paused = False
                             elif selection == 'Menu Principal':
-                                self.quit_game = True
+                                self.jogo_ativo = False
+                                self.paused = False
+            else:
+                if self.game_over:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            self.game_over_menu.navigate(-1)
+                        elif event.key == pygame.K_DOWN:
+                            self.game_over_menu.navigate(1)
+                        elif event.key == pygame.K_RETURN:
+                            selection = self.game_over_menu.select()
+                            if selection == 'Reiniciar':
+                                self.start_game()
+                            elif selection == 'Menu Principal':
+                                self.quit_game = True  # Sinaliza para sair do loop
                 else:
-                    if self.game_over:
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_UP:
-                                self.game_over_menu.navigate(-1)
-                            elif event.key == pygame.K_DOWN:
-                                self.game_over_menu.navigate(1)
-                            elif event.key == pygame.K_RETURN:
-                                selection = self.game_over_menu.select()
-                                if selection == 'Reiniciar':
-                                    self.start_game()
-                                elif selection == 'Menu Principal':
-                                    self.quit_game = True
+                    pass
 
     def run(self):
         while not self.quit_game:
@@ -157,7 +162,6 @@ class Jogo:
             self.grupo_obstaculos.draw(self.tela)
             self.display_score()
             self.desenhar_barra_carregamento()
-            
             # Exibe o menu de fim de jogo
             self.game_over_menu.display_menu()
 
@@ -191,7 +195,8 @@ class Jogo:
 
     def start_game(self):
         self.jogo_ativo = True
-        self.paused = False  # Certifique-se de que o jogo não está pausado
+        self.paused = False
+        self.game_over = False 
         self.tempo_inicio = int(pygame.time.get_ticks() / 1000)
         self.pontuacao = 0
         self.grupo_obstaculos.empty()
