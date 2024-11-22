@@ -1,5 +1,5 @@
 import pygame
-from utilidades.loading import Loading  # Se você realmente precisar do Loading aqui
+from utilidades.loading import Loading
 
 class TelaVitoria:
     def __init__(self, screen):
