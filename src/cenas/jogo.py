@@ -6,6 +6,7 @@ from utilidades.fundoParallax import FundoParallax
 from utilidades.pauseMenu import PauseMenu
 from utilidades.gameOverMenu import GameOverMenu
 from entidades.explosao import Explosao
+from utilidades.telaVitoria import TelaVitoria
 from utilidades.soundManager import SoundManager
 
 class Jogo:
@@ -42,6 +43,7 @@ class Jogo:
         self.game_over_menu = GameOverMenu(self.tela)
         self.quit_game = False
         self.grupo_explosoes = pygame.sprite.Group()
+        self.game_won = False
 
     def events(self):
         for event in pygame.event.get():
@@ -127,7 +129,13 @@ class Jogo:
                 else:
                     self.update_game()
             else:
-                self.update_menu()
+                if self.game_over:
+                    self.update_menu()
+                elif self.game_won:
+                    self.show_victory_screen()
+                    self.game_won = False  # Resetar o estado para evitar repetição
+                else:
+                    self.update_menu()
             pygame.display.update()
             self.relogio.tick(60)
 
@@ -163,6 +171,15 @@ class Jogo:
                 # Removida a atribuição do tempo_ultimo_cenario aqui
                 self.fundo.portal_group.empty()
                 self.portal_active = False
+                if self.fundo.current_scenario_index == len(self.fundo.scenario_order) - 1:
+                    # O jogador venceu o jogo
+                    self.jogo_ativo = False
+                    self.game_won = True
+                else:
+                    # Avança para o próximo cenário
+                    self.fundo.alternar_cenario()
+                    self.fundo.portal_group.empty()
+                    self.fundo.portal_active = False
 
         # Verifica colisão com obstáculos
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
@@ -201,7 +218,18 @@ class Jogo:
             self.game_over_menu.display_menu()
 
     def display_score(self):
-        score_surf = self.fonte_pixel.render(f'Pontuação: {self.pontuacao}', False, (64, 64, 64))
+        # Define as cores para cada grupo de cenários
+        score_color = (64, 64, 64)
+        current_scenario_index = self.fundo.current_scenario_index
+        
+        if current_scenario_index == 0:  # floresta
+            score_color = (255, 200, 0)
+        elif 1 <= current_scenario_index <= 9:  # campo2 até ceu5
+            score_color = (255, 255, 115)
+        elif 10 <= current_scenario_index <= 11: # ceu6 até espaco
+            score_color = (255, 255, 200)
+            
+        score_surf = self.fonte_pixel.render(f'Pontuação: {self.pontuacao}', False, score_color)
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
 
@@ -246,3 +274,8 @@ class Jogo:
         self.fundo.portal_group.empty()
         self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
         self.fundo.update_floor_image()
+
+    def show_victory_screen(self):
+        victory_screen = TelaVitoria(self.tela)
+        victory_screen.show()
+        self.quit_game = True

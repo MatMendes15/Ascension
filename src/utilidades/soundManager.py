@@ -37,14 +37,6 @@ class SoundManager(object):
             sound.play()
         else:
             pass
-
-        #Som de deslize       
-    def slideSound(self):
-        if self.statusCheck() == True:
-            #sound = pygame.mixer.Sound("assets/audio/TESTE.mp3")
-            sound.play()
-        else:
-            pass
         
     
     #Som de seleção de item nos menus interativos        

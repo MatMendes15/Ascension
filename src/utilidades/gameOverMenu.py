@@ -1,5 +1,3 @@
-# src/utilidades/gameOverMenu.py
-
 import pygame
 
 class GameOverMenu:
