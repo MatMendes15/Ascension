@@ -5,6 +5,7 @@ from entidades.obstaculo import Obstaculo
 from utilidades.fundoParallax import FundoParallax
 from utilidades.pauseMenu import PauseMenu
 from utilidades.gameOverMenu import GameOverMenu
+from entidades.explosao import Explosao
 
 class Jogo:
     def __init__(self):
@@ -41,6 +42,7 @@ class Jogo:
         self.pause_menu = PauseMenu(self.tela)
         self.game_over_menu = GameOverMenu(self.tela)
         self.quit_game = False
+        self.grupo_explosoes = pygame.sprite.Group()
 
     def events(self):
         for event in pygame.event.get():
@@ -168,14 +170,20 @@ class Jogo:
                 self.jogador.sprite.fazendo_ataque = True
                 self.jogador.sprite.pode_atacar = False
                 self.jogador.sprite.tempo_ultimo_ataque = pygame.time.get_ticks()
-
                 self.jogador.sprite.indice_barra = 0
 
                 for obstaculo in colisao:
+                    # Cria a explosão na posição do obstáculo
+                    explosao = Explosao(obstaculo.rect.center)
+                    self.grupo_explosoes.add(explosao)
                     obstaculo.kill()
             else:
                 self.jogo_ativo = False
                 self.game_over = True
+
+        # Atualiza e desenha as explosões
+        self.grupo_explosoes.update()
+        self.grupo_explosoes.draw(self.tela)
 
     def update_menu(self):
         if self.game_over:
