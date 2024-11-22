@@ -6,6 +6,7 @@ from utilidades.fundoParallax import FundoParallax
 from utilidades.pauseMenu import PauseMenu
 from utilidades.gameOverMenu import GameOverMenu
 from entidades.explosao import Explosao
+from utilidades.telaVitoria import TelaVitoria
 
 class Jogo:
     def __init__(self):
@@ -43,6 +44,7 @@ class Jogo:
         self.game_over_menu = GameOverMenu(self.tela)
         self.quit_game = False
         self.grupo_explosoes = pygame.sprite.Group()
+        self.game_won = False
 
     def events(self):
         for event in pygame.event.get():
@@ -127,7 +129,13 @@ class Jogo:
                 else:
                     self.update_game()
             else:
-                self.update_menu()
+                if self.game_over:
+                    self.update_menu()
+                elif self.game_won:
+                    self.show_victory_screen()
+                    self.game_won = False  # Resetar o estado para evitar repetição
+                else:
+                    self.update_menu()
             pygame.display.update()
             self.relogio.tick(60)
 
@@ -158,10 +166,15 @@ class Jogo:
             colisao_portal = pygame.sprite.spritecollide(self.jogador.sprite, self.fundo.portal_group, False)
             if colisao_portal:
                 self.pontuacao += 1
-                self.fundo.alternar_cenario()
-                # Removida a atribuição do tempo_ultimo_cenario aqui
-                self.fundo.portal_group.empty()
-                self.portal_active = False
+                if self.fundo.current_scenario_index == len(self.fundo.scenario_order) - 1:
+                    # O jogador venceu o jogo
+                    self.jogo_ativo = False
+                    self.game_won = True
+                else:
+                    # Avança para o próximo cenário
+                    self.fundo.alternar_cenario()
+                    self.fundo.portal_group.empty()
+                    self.fundo.portal_active = False
 
         # Verifica colisão com obstáculos
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
@@ -253,3 +266,8 @@ class Jogo:
         self.fundo.portal_group.empty()
         self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
         self.fundo.update_floor_image()
+
+    def show_victory_screen(self):
+        victory_screen = TelaVitoria(self.tela)
+        victory_screen.show()
+        self.quit_game = True

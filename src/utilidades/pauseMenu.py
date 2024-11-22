@@ -1,5 +1,3 @@
-# src/utilidades/pause_menu.py
-
 import pygame
 
 class PauseMenu:

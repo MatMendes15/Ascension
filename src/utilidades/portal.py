@@ -1,4 +1,3 @@
-# Python
 import pygame
 
 class Portal(pygame.sprite.Sprite):
