@@ -197,7 +197,18 @@ class Jogo:
             self.game_over_menu.display_menu()
 
     def display_score(self):
-        score_surf = self.fonte_pixel.render(f'Pontuação: {self.pontuacao}', False, (64, 64, 64))
+        # Define as cores para cada grupo de cenários
+        score_color = (64, 64, 64)
+        current_scenario_index = self.fundo.current_scenario_index
+        
+        if current_scenario_index == 0:  # floresta
+            score_color = (255, 200, 0)
+        elif 1 <= current_scenario_index <= 9:  # campo2 até ceu5
+            score_color = (255, 255, 115)
+        elif 10 <= current_scenario_index <= 11: # ceu6 até espaco
+            score_color = (255, 255, 200)
+            
+        score_surf = self.fonte_pixel.render(f'Pontuação: {self.pontuacao}', False, score_color)
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
 
