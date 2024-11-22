@@ -2,8 +2,9 @@ import pygame
 from utilidades.loading import Loading
 
 class TelaVitoria:
-    def __init__(self, screen):
+    def __init__(self, screen, soundManager):
         self.screen = screen
+        self.soundManager = soundManager
         self.font = pygame.font.Font('assets/fontes/PressStart2PFont.ttf', 30)
         self.image = pygame.image.load('assets/imagens/jogo_fim/imagem_vitoria.png').convert()
         self.image = pygame.transform.scale(self.image, (800, 400))
@@ -39,5 +40,5 @@ class TelaVitoria:
         # Importa Menu aqui para evitar importação circular
         from cenas.menu import Menu
         loading = Loading()
-        menu = Menu(self.screen, loading)
+        menu = Menu(self.screen, loading, self.soundManager)
         menu.show()

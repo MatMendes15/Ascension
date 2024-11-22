@@ -168,18 +168,12 @@ class Jogo:
                 self.pontuacao += 1
                 self.fundo.alternar_cenario()
                 self.soundManager.portalSound()
-                # Removida a atribuição do tempo_ultimo_cenario aqui
                 self.fundo.portal_group.empty()
                 self.portal_active = False
-                if self.fundo.current_scenario_index == len(self.fundo.scenario_order) - 1:
-                    # O jogador venceu o jogo
+                # Verifica se todos os cenários foram concluídos
+                if self.fundo.current_scenario_index == 0:
                     self.jogo_ativo = False
                     self.game_won = True
-                else:
-                    # Avança para o próximo cenário
-                    self.fundo.alternar_cenario()
-                    self.fundo.portal_group.empty()
-                    self.fundo.portal_active = False
 
         # Verifica colisão com obstáculos
         colisao = pygame.sprite.spritecollide(self.jogador.sprite, self.grupo_obstaculos, False)
@@ -276,6 +270,6 @@ class Jogo:
         self.fundo.update_floor_image()
 
     def show_victory_screen(self):
-        victory_screen = TelaVitoria(self.tela)
+        victory_screen = TelaVitoria(self.tela, self.soundManager)
         victory_screen.show()
         self.quit_game = True
