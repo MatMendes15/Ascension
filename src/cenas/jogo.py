@@ -67,7 +67,19 @@ class Jogo:
                             self.jogador.sprite.som_pulo.play()
 
                 if event.type == self.obstacle_timer and not self.paused:
-                    tipo_obstaculo = choice(['morcego', 'cogumelo', 'cogumelo', 'cogumelo'])
+                    current_scenario_index = self.fundo.current_scenario_index
+
+                    if current_scenario_index in [0, 1, 2]:  # 'floresta', 'campo2', 'campo3'
+                        possible_obstacles = ['morcego', 'cogumelo']
+                    elif current_scenario_index in range(3, 11):  # 'ceu' até 'ceu8'
+                        possible_obstacles = ['fantasma', 'bicho']
+                    elif current_scenario_index == 11:  # 'espaco'
+                        possible_obstacles = ['monstro', 'alien']
+                    else:
+                        # Caso padrão, se o índice do cenário não corresponder a nenhum dos anteriores
+                        possible_obstacles = ['morcego', 'cogumelo']
+
+                    tipo_obstaculo = choice(possible_obstacles)
                     novo_obstaculo = Obstaculo(tipo_obstaculo, self.velocidade_obstaculos)
                     self.grupo_obstaculos.add(novo_obstaculo)
 
