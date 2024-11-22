@@ -126,10 +126,20 @@ class FundoParallax:
     def update_floor_image(self):
         if self.current_scenario_index in [0, 1, 2]:  # 'floresta', 'campo2', 'campo3'
             floor_image_name = 'grama_piso.png'
-        elif self.current_scenario_index in range(3, 11):  # 'ceu' até 'ceu8'
+        elif self.current_scenario_index == 3:
+            floor_image_name = 'nuvens_piso0.png'    
+        elif self.current_scenario_index in range(3, 6):  # 'ceu' até 'ceu3'
             floor_image_name = 'nuvens_piso.png'
-        elif self.current_scenario_index == 11:  # 'espaco'
+        elif self.current_scenario_index in range(6, 9):  # 'ceu4' até 'ceu6'
+            floor_image_name = 'nuvens_piso1.png'
+        elif self.current_scenario_index == 9:
+            floor_image_name = 'nuvens_piso2.png'
+        elif self.current_scenario_index == 10:
+            floor_image_name = 'nuvens_piso3.png'
+        elif self.current_scenario_index == 11:
             floor_image_name = 'lua_piso.png'
+        else:
+            floor_image_name = 'grama_piso.png'
 
         self.chao = pygame.image.load(f'assets/imagens/fundo/{floor_image_name}').convert_alpha()
         altura_chao = 70
