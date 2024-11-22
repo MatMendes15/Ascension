@@ -35,9 +35,7 @@ class Jogo:
         self.obstacle_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.obstacle_timer, 1500)
 
-        self.velocidade_obstaculos = 6
-        self.tempo_ultimo_incremento = pygame.time.get_ticks()
-        self.intervalo_incremento = 20000  # Dificuldade aumenta - 20 segundos
+        self.velocidade_obstaculos = 6  # Velocidade inicial dos obstáculos ajustada
 
         self.paused = False
         self.pause_menu = PauseMenu(self.tela)
@@ -132,6 +130,15 @@ class Jogo:
             self.relogio.tick(60)
 
     def update_game(self):
+        # Índices onde a velocidade deve ser incrementada
+        indices_incremento = [4, 10]
+        
+        # Calcula o número de incrementos com base no cenário atual
+        incrementos = sum(1 for indice in indices_incremento if self.fundo.current_scenario_index >= indice)
+        
+        # Define a velocidade dos obstáculos
+        self.velocidade_obstaculos = 6 + incrementos
+
         self.fundo.update()
         self.fundo.draw(self.tela)
         
@@ -186,11 +193,11 @@ class Jogo:
         score_rect = score_surf.get_rect(center=(670, 35))
         self.tela.blit(score_surf, score_rect)
 
-    def verificar_incremento_dificuldade(self):
-        tempo_atual = pygame.time.get_ticks()
-        if tempo_atual - self.tempo_ultimo_incremento >= self.intervalo_incremento:
-            self.velocidade_obstaculos += 1
-            self.tempo_ultimo_incremento = tempo_atual
+   # def verificar_incremento_dificuldade(self):
+       # tempo_atual = pygame.time.get_ticks()
+       # if tempo_atual - self.tempo_ultimo_incremento >= self.intervalo_incremento:
+         #   self.velocidade_obstaculos += 1
+          #  self.tempo_ultimo_incremento = tempo_atual
 
     def desenhar_barra_carregamento(self):
         barra_image = self.jogador.sprite.barra_carregamento_frames[self.jogador.sprite.indice_barra]
@@ -216,21 +223,14 @@ class Jogo:
         self.grupo_obstaculos.empty()
         self.jogador.sprite.rect.midbottom = (80, self.jogador.sprite.altura_chao)
         self.jogador.sprite.gravidade = 0
-        self.velocidade_obstaculos = 6
-        self.tempo_ultimo_incremento = pygame.time.get_ticks()
-        
-        # Reset cenário para o inicial
+
+        # Reinicia o cenário e a velocidade
         self.fundo.current_scenario_index = 0
         self.fundo.current_scenario = self.fundo.scenario_order[0]
         self.fundo.camadas = self.fundo.scenarios[self.fundo.current_scenario]
+        self.velocidade_obstaculos = 6  # Reinicia para a velocidade inicial
+
         self.fundo.portal_active = False
         self.fundo.portal_group.empty()
         self.fundo.tempo_ultimo_cenario = pygame.time.get_ticks()
-        self.fundo.tempo_pausa_total = 0
-        # Reset posições das camadas
-        for camada in self.fundo.camadas:
-            camada['posicao'] = 0
-        self.fundo.posicao_chao = 0
-
-        # Atualiza a imagem do chão
         self.fundo.update_floor_image()
