@@ -111,7 +111,7 @@ class FundoParallax:
 
         # Controle de tempo para trocar o cenário
         self.tempo_ultimo_cenario = pygame.time.get_ticks()
-        self.intervalo_cenario = 8000  # 8 segundos em milissegundos
+        self.intervalo_cenario = 20000  # 20 segundos em milissegundos | Ideal 65 segundos
 
         # Gerenciamento do portal
         self.portal_group = pygame.sprite.Group()
@@ -171,13 +171,10 @@ class FundoParallax:
             tempo_ajustado = tempo_atual - self.tempo_pausa_total
             tempo_desde_ultimo_cenario = tempo_ajustado - self.tempo_ultimo_cenario
 
-            # Reduzir os prints de debug
-            print(f"DEBUG: tempo_desde_ultimo={tempo_desde_ultimo_cenario}, intervalo={self.intervalo_cenario}")
             
             # Verifica se é hora de mostrar o portal (3 segundos antes do fim do intervalo)
             if (not self.portal_active and 
                 tempo_desde_ultimo_cenario >= self.intervalo_cenario - self.tempo_portal_mostrar):
-                print("DEBUG: Spawning portal!")
                 self.spawn_portal()
                 self.portal_active = True
                 self.tempo_portal_inicio = tempo_ajustado
