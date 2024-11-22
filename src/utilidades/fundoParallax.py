@@ -105,12 +105,9 @@ class FundoParallax:
             for camada in scenario:
                 camada['imagem'] = pygame.transform.scale(camada['imagem'], (self.largura_tela, self.altura_tela))
 
-        # Configura o chão
-        self.chao = pygame.image.load('assets/imagens/fundo/grama_piso.png').convert_alpha()
-        altura_chao = 70
-        self.chao = pygame.transform.scale(self.chao, (self.largura_tela, altura_chao))
+        # Inicializa o chão
+        self.update_floor_image()
         self.posicao_chao = 0
-        self.altura_chao = self.altura_tela - altura_chao
 
         # Controle de tempo para trocar o cenário
         self.tempo_ultimo_cenario = pygame.time.get_ticks()
@@ -125,6 +122,19 @@ class FundoParallax:
         self.tempo_pausa_inicio = 0
         self.tempo_pausa_total = 0
         self.pausado = False
+
+    def update_floor_image(self):
+        if self.current_scenario_index in [0, 1, 2]:  # 'floresta', 'campo2', 'campo3'
+            floor_image_name = 'grama_piso.png'
+        elif self.current_scenario_index in range(3, 11):  # 'ceu' até 'ceu8'
+            floor_image_name = 'nuvens_piso.png'
+        elif self.current_scenario_index == 11:  # 'espaco'
+            floor_image_name = 'lua_piso.png'
+
+        self.chao = pygame.image.load(f'assets/imagens/fundo/{floor_image_name}').convert_alpha()
+        altura_chao = 70
+        self.chao = pygame.transform.scale(self.chao, (self.largura_tela, altura_chao))
+        self.altura_chao = self.altura_tela - altura_chao
 
     def pausar(self):
         if not self.pausado:
@@ -200,12 +210,15 @@ class FundoParallax:
         self.current_scenario_index = (self.current_scenario_index + 1) % len(self.scenario_order)
         self.current_scenario = self.scenario_order[self.current_scenario_index]
         self.camadas = self.scenarios[self.current_scenario]
-        
+
         # Reset posições
         for camada in self.camadas:
             camada['posicao'] = 0
         self.posicao_chao = 0
-        
+
+        # Atualiza a imagem do chão
+        self.update_floor_image()
+
         # Atualiza tempo do último cenário com tempo ajustado
         tempo_atual = pygame.time.get_ticks()
         self.tempo_ultimo_cenario = tempo_atual - self.tempo_pausa_total

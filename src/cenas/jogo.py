@@ -219,3 +219,6 @@ class Jogo:
         for camada in self.fundo.camadas:
             camada['posicao'] = 0
         self.fundo.posicao_chao = 0
+
+        # Atualiza a imagem do chão
+        self.fundo.update_floor_image()
