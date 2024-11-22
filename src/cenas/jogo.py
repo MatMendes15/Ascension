@@ -6,10 +6,12 @@ from utilidades.fundoParallax import FundoParallax
 from utilidades.pauseMenu import PauseMenu
 from utilidades.gameOverMenu import GameOverMenu
 from entidades.explosao import Explosao
+from utilidades.soundManager import SoundManager
 
 class Jogo:
-    def __init__(self):
+    def __init__(self, soundManager):
         pygame.init()
+        self.soundManager = soundManager
         self.tela = pygame.display.set_mode((800, 400))
         pygame.display.set_caption('Ascension')
         self.relogio = pygame.time.Clock()
@@ -20,9 +22,6 @@ class Jogo:
         self.paused = False
         self.tempo_inicio = 0
         self.pontuacao = 0
-
-        self.musica_fundo = pygame.mixer.Sound('assets/audio/Lost Highway.mp3')
-        self.musica_fundo.play(loops=-1)
 
         self.jogador = pygame.sprite.GroupSingle()
         self.jogador.add(Jogador())
@@ -55,16 +54,17 @@ class Jogo:
                     if event.key == pygame.K_ESCAPE:
                         self.paused = not self.paused  # Alterna o estado de pausa
                         if self.paused:
+                            pygame.mixer.pause()
                             self.fundo.pausar()  # Pause background
-                            pygame.mixer.music.pause()
+                            self.soundManager.selectSound()
                         else:
                             self.fundo.despausar()  # Unpause background
-                            pygame.mixer.music.unpause()
                     elif not self.paused:
                         # Controles do jogo quando não está pausado
+                        pygame.mixer.unpause()
                         if event.key == pygame.K_UP and self.jogador.sprite.rect.bottom >= self.jogador.sprite.altura_chao:
                             self.jogador.sprite.gravidade = -23
-                            self.jogador.sprite.som_pulo.play()
+                            self.soundManager.jumpSound()
 
                 if event.type == self.obstacle_timer and not self.paused:
                     current_scenario_index = self.fundo.current_scenario_index
@@ -94,7 +94,6 @@ class Jogo:
                             if selection == 'Continuar':
                                 self.paused = False
                                 self.fundo.despausar()  # Adicionar esta linha
-                                pygame.mixer.music.unpause()
                             elif selection == 'Reiniciar':
                                 self.start_game()
                                 self.paused = False
@@ -119,6 +118,7 @@ class Jogo:
                     pass
 
     def run(self):
+        self.soundManager.backgroundMusic()
         while not self.quit_game:
             self.events()
             if self.jogo_ativo:
@@ -159,6 +159,7 @@ class Jogo:
             if colisao_portal:
                 self.pontuacao += 1
                 self.fundo.alternar_cenario()
+                self.soundManager.portalSound()
                 # Removida a atribuição do tempo_ultimo_cenario aqui
                 self.fundo.portal_group.empty()
                 self.portal_active = False
@@ -177,6 +178,8 @@ class Jogo:
                     explosao = Explosao(obstaculo.rect.center)
                     self.grupo_explosoes.add(explosao)
                     obstaculo.kill()
+                    self.soundManager.swordSound()
+                    self.soundManager.explosionSound()
             else:
                 self.jogo_ativo = False
                 self.game_over = True
@@ -188,6 +191,7 @@ class Jogo:
     def update_menu(self):
         if self.game_over:
             # Mostra estado atual do jogo congelado
+            pygame.mixer.stop()
             self.fundo.draw(self.tela)
             self.jogador.draw(self.tela)
             self.grupo_obstaculos.draw(self.tela)

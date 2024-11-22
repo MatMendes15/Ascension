@@ -29,9 +29,6 @@ class Jogador(pygame.sprite.Sprite):
         self.image = self.jogador_andando[self.indice_jogador]
         self.gravidade = 0
 
-        self.som_pulo = pygame.mixer.Sound('assets/audio/jump.mp3')
-        self.som_pulo.set_volume(0.5)
-
         self.altura_chao = 350
         self.rect = self.image.get_rect(midbottom=(80, self.altura_chao))
         self.posicao_original_chao = self.altura_chao
@@ -62,7 +59,6 @@ class Jogador(pygame.sprite.Sprite):
         
         if teclas[pygame.K_UP] and self.rect.bottom >= self.altura_chao and not self.fazendo_rasteira:
             self.gravidade = -23
-            self.som_pulo.play()
             
         if teclas[pygame.K_DOWN] and self.rect.bottom >= self.altura_chao and not self.fazendo_rasteira:
             self.fazendo_rasteira = True
